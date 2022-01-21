@@ -5,6 +5,7 @@ import ListIcon from '@mui/icons-material/ListAlt';
 import NewReleasesIcon from '@mui/icons-material/AccountBox';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import ProjectSearchBox from './ProjectSearchBox';
+import TreeNodes from './TreeNodes';
 
 const NavBorder = styled(Box)(() => ({
     borderRadius: "4px",
@@ -43,8 +44,8 @@ export default function NavMenu(props) {
             <Box 
                 style={{
                     padding: '0px 0px 0px 0px'}}>
-                    {/* <TreeNodes
-                        menu={props.menu}/> */}
+                    <TreeNodes
+                        menu={props.menu}/>
             </Box>
       </NavBorder>
     );
