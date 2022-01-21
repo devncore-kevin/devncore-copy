@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSpring, animated } from 'react-spring';
-import {Collapse} from '@mui/material';
+import { Collapse } from '@mui/material';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import TreeView from '@mui/lab/TreeView';
 import TreePlusIcon from "./TreePlusIcon";
@@ -14,31 +14,31 @@ import PropTypes from 'prop-types';
 
 function TransitionComponent(props) {
     const style = useSpring({
-      from: {
-        opacity: 0,
-        transform: 'translate3d(20px,0,0)',
-      },
-      to: {
-        opacity: props.in ? 1 : 0,
-        transform: `translate3d(${props.in ? 0 : 20}px,0,0)`,
-      },
+        from: {
+            opacity: 0,
+            transform: 'translate3d(20px,0,0)',
+        },
+        to: {
+            opacity: props.in ? 1 : 0,
+            transform: `translate3d(${props.in ? 0 : 20}px,0,0)`,
+        },
     });
-  
-    return (
-      <animated.div style={style}>
-        <Collapse {...props} />
-      </animated.div>
-    );
-  }
 
-  TransitionComponent.propTypes = {
+    return (
+        <animated.div style={style}>
+            <Collapse {...props} />
+        </animated.div>
+    );
+}
+
+TransitionComponent.propTypes = {
     /**
      * Show the component; triggers the enter or exit states
      */
     in: PropTypes.bool,
-  };
+};
 
-  const StyledTreeItem = styled((props) => (
+const StyledTreeItem = styled((props) => (
     <TreeItem {...props} TransitionComponent={TransitionComponent} />))(({ theme }) => ({
         [`& .${treeItemClasses.iconContainer}`]: {
             '& .close': {
@@ -49,7 +49,7 @@ function TransitionComponent(props) {
             marginLeft: 15,
             paddingLeft: 0,
             borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.2)}`,
-        }, 
+        },
         [`& .${treeItemClasses.content}`]: {
             '& .MuiTreeItem-label': {
                 paddingTop: '4px',
@@ -71,31 +71,47 @@ function TransitionComponent(props) {
                 ].join(','),
             },
         },
-}));
+    }));
 
 let _menuName = "";
 
 export default function TreeNodes(props) {
     const navigate = useNavigate();
     const [menus, setMenus] = React.useState(null);
-    
-  const getArticles = () => {
-      Axios.get(svc.find("/api/articlecategories"), svc.options())
-          .then(response => {
-              setMenus(response.data);
-          })
-          .catch(function (error) {
-              console.log("get article error:", error);
-          });
+
+    const getArticles = () => {
+        Axios.get(svc.find("/api/articlecategories"), svc.options())
+            .then(response => {
+                setMenus(response.data);
+            })
+            .catch(function (error) {
+                console.log("get article error:", error);
+            });
     }
-    
+    const getOpenSources = () => {
+        Axios.get(svc.find("/api/opensourcecategory"), svc.options())
+            .then(response => {
+                setMenus(response.data);
+            })
+            .catch(function (error) {
+                console.log("get opensource error:", error);
+            })
+            .then(function () {
+                // some things..
+            });
+    }
+
     React.useEffect(() => {
         if (props.menu.includes("article")) {
             _menuName = "article";
             getArticles();
         }
+        else if (props.menu.includes("opensource")) {
+            _menuName = "opensource";
+            getOpenSources();
+        }
     }, [props.menu]);
-    
+
     function menuClick(e, menu) {
         navigate(`/${_menuName}/${menu.id}`);
     }
@@ -108,12 +124,12 @@ export default function TreeNodes(props) {
                 onClick={(e) => menuClick(e, child)}
                 label={child.title}>
             </StyledTreeItem>
-          );
+        );
     }
 
     const initCategoryItemsTemplate = (cate) => {
         return (
-            <StyledTreeItem 
+            <StyledTreeItem
                 key={cate.cateId}
                 nodeId={cate.cateId.toString()}
                 label={cate.cateName + " (" + cate.childCount + ")"}>
@@ -125,31 +141,31 @@ export default function TreeNodes(props) {
                     })
                 }
             </StyledTreeItem>
-          );
-      } 
+        );
+    }
 
-      return (
-          <TreeView
-              defaultExpanded={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "21", "22"]}
-              defaultCollapseIcon={<TreeMinusIcon/>}
-              defaultExpandIcon={<TreePlusIcon/>}
-              defaultEndIcon={<TreeDefaultIcon/>}
-              sx={{ 
-                  height: "100%", 
-                  flexGrow: 1, 
-                  margin: '0px', 
-                  overflowY: 'auto', 
-                  overflowX: "hidden" }}>
-                
-              {menus !== null ?
-                  menus.map(menu => {
+    return (
+        <TreeView
+            defaultExpanded={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "21", "22"]}
+            defaultCollapseIcon={<TreeMinusIcon />}
+            defaultExpandIcon={<TreePlusIcon />}
+            defaultEndIcon={<TreeDefaultIcon />}
+            sx={{
+                height: "100%",
+                flexGrow: 1,
+                margin: '0px',
+                overflowY: 'auto',
+                overflowX: "hidden"
+            }}>
+
+            {menus !== null ?
+                menus.map(menu => {
                     return (
                         initCategoryItemsTemplate(menu)
                     );
                 })
-              : null
-              }
-          </TreeView>
-      );
+                : null
+            }
+        </TreeView>
+    );
 }
-  
